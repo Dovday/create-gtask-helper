@@ -1,7 +1,6 @@
+
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { gapi } from "gapi-script";
-import axios from "axios";
 import * as api from "./api/google";
 import NewTask from "./components/NewTask";
 
@@ -20,7 +19,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    //client.requestAccessToken();
+    client.requestAccessToken();
   }, []);
 
   return (
