@@ -19,11 +19,11 @@ const App = () => {
   });
 
   useEffect(() => {
-    client.requestAccessToken();
+    //client.requestAccessToken();
   }, []);
 
   return (
-    <div className="App bg-stone-400">
+    <div className="App flex flex-col h-screen py-4">
       <NewTask/>
       {lists.map((list, index) => {
         return (
