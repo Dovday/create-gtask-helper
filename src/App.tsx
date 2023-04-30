@@ -1,3 +1,6 @@
+// to kill process that is using port 5173
+// lsof -i :5173
+// kill -9 <PID>
 
 import React, { useEffect, useState } from "react";
 import "./App.css";
@@ -19,17 +22,12 @@ const App = () => {
   });
 
   useEffect(() => {
-    //client.requestAccessToken();
+    client.requestAccessToken();
   }, []);
 
   return (
     <div className="App flex flex-col h-screen py-4">
-      <NewTask/>
-      {lists.map((list, index) => {
-        return (
-          <h1 key={index}>{list.title}</h1>
-        )
-      })}
+      <NewTask propsLists={lists}/>
     </div>
   );
 }

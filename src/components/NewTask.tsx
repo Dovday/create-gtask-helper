@@ -1,8 +1,8 @@
 import React from "react";
-import { FaRegStar } from 'react-icons/fa';
+import { FaRegStar } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa";
 
-
-const NewTask = () => {
+const NewTask = (props) => {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-row justify-between px-10">
@@ -11,7 +11,7 @@ const NewTask = () => {
           type="text"
           placeholder="Add task"
         />
-        <FaRegStar className="self-center text-5xl -mr-16 text-stone-500"/>
+        <FaRegStar className="self-center text-5xl -mr-16 text-stone-500" />
         <button
           className="bg-blue-600 hover:bg-blue-700 my-2 px-10 rounded-md text-white text-xl font-semibold tracking-wide"
           type="submit"
@@ -30,18 +30,7 @@ const NewTask = () => {
               aria-haspopup="true"
             >
               Lists
-              <svg
-                className="-mr-1 h-5 w-5 text-gray-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <FaAngleDown className="self-center"/>
             </button>
           </div>
           <div
@@ -51,27 +40,18 @@ const NewTask = () => {
             aria-labelledby="menu-button"
           >
             <div className="py-1" role="none">
-              <a
-                href="#"
-                className="block text-stone-900 text-xl px-4 py-2 hover:bg-stone-100"
-                id="menu-item-0"
-              >
-                l1
-              </a>
-              <a
-                href="#"
-                className="block text-stone-900 text-xl px-4 py-2 hover:bg-stone-100"
-                id="menu-item-1"
-              >
-                l1
-              </a>
-              <a
-                href="#"
-                className="block text-stone-900 text-xl px-4 py-2 hover:bg-stone-100"
-                id="menu-item-2"
-              >
-                l1
-              </a>
+              {props.propsLists.map((list) => {
+                return (
+                  <a
+                    href="#"
+                    className="block text-stone-900 text-xl px-5 py-2 hover:bg-stone-100"
+                    id={`menu-item-${list.id}`}
+                    key={list.id}
+                  >
+                    {list.title}
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
