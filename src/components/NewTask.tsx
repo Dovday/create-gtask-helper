@@ -1,8 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa";
 
 const NewTask = (props) => {
+  const addFav = () => {
+    document.getElementById("emptyStar").classList.add("hidden")!;
+    document.getElementById("fillStar").classList.remove("hidden")!;
+  };
+  const delFav = () => {
+    document.getElementById("fillStar").classList.add("hidden")!;
+    document.getElementById("emptyStar").classList.remove("hidden")!;
+  };
+
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-row justify-between px-10">
@@ -11,13 +21,24 @@ const NewTask = (props) => {
           type="text"
           placeholder="Add task"
         />
-        <FaRegStar className="self-center text-5xl -mr-16 text-stone-500" />
-        <button
-          className="bg-blue-600 hover:bg-blue-700 my-2 px-10 rounded-md text-white text-xl font-semibold tracking-wide"
-          type="submit"
-        >
-          Save
-        </button>
+        <div className="flex flex-row justify-between gap-10">
+          <FaRegStar
+            id="emptyStar"
+            className="self-center text-5xl text-stone-500"
+            onClick={() => addFav()}
+          />
+          <FaStar
+            id="fillStar"
+            className="hidden self-center text-5xl text-yellow-500"
+            onClick={() => delFav()}
+          />
+          <button
+            className="bg-blue-600 hover:bg-blue-700 my-2 px-10 rounded-md text-white text-xl font-semibold tracking-wide"
+            type="submit"
+          >
+            Save
+          </button>
+        </div>
       </div>
       <div className="flex px-10">
         <div className="relative inline-block text-left">
@@ -30,7 +51,7 @@ const NewTask = (props) => {
               aria-haspopup="true"
             >
               Lists
-              <FaAngleDown className="self-center"/>
+              <FaAngleDown className="self-center" />
             </button>
           </div>
           <div
