@@ -7,9 +7,13 @@ import "./App.css";
 import * as api from "./api/google";
 import NewTask from "./components/NewTask";
 
+export interface List {
+  id: string;
+  title: string;
+}
+
 const App = () => {
-  const [lists, setLists] = useState<any[]>([]);
-  const [defaultList, setDefaultList] = useState<Object>({title:"", id:""});
+  const [lists, setLists] = useState<List[]>([]);
 
   // gapi api call
   const client = google.accounts.oauth2.initTokenClient({
@@ -19,7 +23,6 @@ const App = () => {
       localStorage.setItem("access_token", response.access_token);
       api.getAllLists()
       .then((response) => setLists(response));
-      setDefaultList(lists[0]);
     },
   });
 
@@ -29,7 +32,7 @@ const App = () => {
 
   return (
     <div className="App flex flex-col h-screen py-4">
-      <NewTask propsLists={lists} propsDefaultList={defaultList}/>
+      <NewTask propsLists={lists}/>
     </div>
   );
 }
