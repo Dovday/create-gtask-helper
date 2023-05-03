@@ -11,14 +11,39 @@ interface IProps {
 const NewTask = (props: IProps) => {
   const [favList, setFavList] = useState<List>({ id: "", title: "" });
   const [starredTask, setStarredTask] = useState<boolean>(false);
+  const inputTask = document.getElementById("taskText");
+
+  const setEndOfContenteditable = (contentEditableElement: any) => {
+    let range, selection;
+    if (document.createRange) {
+      //Firefox, Chrome, Opera, Safari, IE 9+
+      range = document.createRange(); //Create a range (a range is a like the selection but invisible)
+      range.selectNodeContents(contentEditableElement); //Select the entire contents of the element with the range
+      range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
+      selection = window.getSelection(); //get the selection object (allows you to change selection)
+      selection.removeAllRanges(); //remove any selections already made
+      selection.addRange(range); //make the range you have just created the visible selection
+    } else if (document.selection) {
+      //IE 8 and lower
+      range = document.body.createTextRange(); //Create a range (a range is a like the selection but invisible)
+      range.moveToElementText(contentEditableElement); //Select the entire contents of the element with the range
+      range.collapse(false); //collapse the range to the end point. false means collapse to end rather than the start
+      range.select(); //Select the range (make it the visible selection
+    }
+  };
 
   const handleInputTask = (taskText: string) => {
-    if (taskText.length >= 4) {
-      const last4digits = taskText.slice(Math.max(taskText.length - 4));
-      if (last4digits === "!!! ") {
-        setStarredTask(true);
-      }
+    if (taskText.includes("!!!")) {
+      let trigger = taskText;
+      inputTask!.innerHTML = trigger.replace(
+        /!!!/,
+        "<span class='bg-blue-600 rounded-md px-2 py-1 text-white'>!!!</span>"
+      );
+      setStarredTask(true);
+    } else {
+      setStarredTask(false);
     }
+    setEndOfContenteditable(inputTask);
   };
 
   useEffect(() => {
@@ -30,28 +55,29 @@ const NewTask = (props: IProps) => {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-row justify-between px-10">
-        <input
-          className="w-3/5 py-4 border-0 border-b-2 text-stone-900 text-4xl placeholder:text-4xl placeholder:text-stone-500 placeholder:tracking-wide focus:outline-0 focus:border-b-4 focus:border-b-blue-600"
-          type="text"
-          placeholder="Add task"
-          onChange={(e) => handleInputTask(e.target.value)}
-        />
+        <div
+          id="taskText"
+          contentEditable={true}
+          className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl placeholder:text-3xl placeholder:text-stone-500 placeholder:tracking-wide focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
+          // placeholder="Add task"
+          onInput={(e) => handleInputTask(e.target.innerText)}
+        ></div>
         <div className="flex flex-row justify-between gap-10">
           {!starredTask ? (
             <FaRegStar
               id="emptyStar"
-              className="self-center text-5xl text-stone-500"
+              className="self-center text-3xl text-stone-500"
               onClick={() => setStarredTask(true)}
             />
           ) : (
             <FaStar
               id="fillStar"
-              className="self-center text-5xl text-yellow-500"
+              className="self-center text-3xl text-yellow-500"
               onClick={() => setStarredTask(false)}
             />
           )}
           <button
-            className="bg-blue-600 hover:bg-blue-700 my-2 px-10 rounded-md text-white text-xl font-semibold tracking-wide"
+            className="bg-blue-600 hover:bg-blue-700 my-4 px-6 rounded-md text-white font-semibold tracking-wide"
             type="submit"
           >
             Save
