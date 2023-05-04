@@ -3,15 +3,52 @@ import { FaRegStar } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 import { FaAngleDown } from "react-icons/fa";
 import { List } from "../App";
+import * as api from "../api/google";
 
 interface IProps {
   propsLists: List[];
 }
 
+// EXAMPLE TASK FROM DOC
+// {
+//   "kind": string,
+//   "id": string,
+//   "etag": string,
+//   "title": string,
+//   "updated": string,
+//   "selfLink": string,
+//   "parent": string,
+//   "position": string,
+//   "notes": string,
+//   "status": string,
+//   "due": string,
+//   "completed": string,
+//   "deleted": boolean,
+//   "hidden": boolean,
+//   "links": [
+//     {
+//       "type": string,
+//       "description": string,
+//       "link": string
+//     }
+//   ]
+// }
+
+export interface ITask 
+  {
+    kind?: string, // must always be 'task#task',
+    title: string, 
+    updated?: string, // RFC 3339 timestamp
+    notes?: string, // optional: description
+    status: string, // 'needsAction' or 'completed'
+    due?: string, // optional: RFC 3339 timestamp - It isn't possible to read or write the time that a task is due via the API
+  }
+
 const NewTask = (props: IProps) => {
   const [favList, setFavList] = useState<List>({ id: "", title: "" });
   const [starredTask, setStarredTask] = useState<boolean>(false);
   const inputTask = document.getElementById("taskText");
+  const [task, setTask] = useState<ITask>();
 
   const setEndOfContenteditable = (contentEditableElement: any) => {
     let range, selection;
@@ -46,10 +83,31 @@ const NewTask = (props: IProps) => {
     setEndOfContenteditable(inputTask);
   };
 
+  const postTask = () => {
+    // TODO
+    // check if title is empty
+    // notify the user if task was added correctly
+    // or otherwise
+    // clear input field
+
+    const newTask: ITask = {
+      title: inputTask!.innerText,
+      due:"2023-05-05T16:59:19.243Z",
+      notes:"test",
+      status: "needsAction",
+    };
+
+    const status = api.postTask(newTask, favList);
+
+    console.log(status);
+  }
+
   useEffect(() => {
     if (props.propsLists.length == 0) return;
 
     setFavList(props.propsLists[0]);
+
+    console.log(api.getAllTasksFromList(props.propsLists[0]));
   }, [props.propsLists]);
 
   return (
@@ -79,6 +137,7 @@ const NewTask = (props: IProps) => {
           <button
             className="bg-blue-600 hover:bg-blue-700 my-4 px-6 rounded-md text-white font-semibold tracking-wide"
             type="submit"
+            onClick={() => postTask()}
           >
             Save
           </button>
