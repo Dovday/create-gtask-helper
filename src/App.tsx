@@ -30,6 +30,9 @@ const App = () => {
     client.requestAccessToken();
   }, []);
 
+  // TODO
+  // create loading screen
+  
   return (
     <div className="App flex flex-col h-screen py-4">
       <NewTask propsLists={lists}/>

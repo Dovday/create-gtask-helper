@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { FaRegStar } from "react-icons/fa";
-import { FaStar } from "react-icons/fa";
-import { FaAngleDown } from "react-icons/fa";
+import { FaRegStar, FaStar, FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { List } from "../App";
+import Dropdown from "react-dropdown";
+// import "react-dropdown/style.css";
 import * as api from "../api/google";
 
 interface IProps {
   propsLists: List[];
+}
+
+interface IListOption {
+  value: string;
+  label: string;
 }
 
 // EXAMPLE TASK FROM DOC
@@ -51,6 +56,8 @@ const NewTask = (props: IProps) => {
   const inputTask = document.getElementById("taskText");
   const taskPlaceholder = document.getElementById("taskPlaceholder");
 
+  const [listsOption, setListsOption] = useState<IListOption[]>([]);
+
   const setEndOfContenteditable = (contentEditableElement: any) => {
     let range, selection;
     if (document.createRange) {
@@ -73,7 +80,7 @@ const NewTask = (props: IProps) => {
   const handleInputTask = (taskText: string) => {
     // TODO
     // handle placeholder
-    
+
     let trigger = taskText;
     if (taskText.includes("!!!")) {
       inputTask!.innerHTML = trigger.replace(
@@ -91,14 +98,16 @@ const NewTask = (props: IProps) => {
     setEndOfContenteditable(inputTask);
   };
 
-  const handleListClick = (list: List) => {
-    // TODO
-    // close dropdown
-    setFavList(list);
+  const handleListClick = (chosenList: any) => {
+    const convertedList = {
+      id: chosenList.value,
+      title: chosenList.label,
+    }
+    setFavList(convertedList);
   };
 
   const postTask = () => {
-    if(!inputTask!.innerText) {
+    if (!inputTask!.innerText) {
       console.log("empty task");
       // TODO
       // show alert
@@ -126,6 +135,12 @@ const NewTask = (props: IProps) => {
   useEffect(() => {
     if (props.propsLists.length == 0) return;
 
+    setListsOption(props.propsLists.map((list) => {
+      return {
+        value: list.id,
+        label: list.title,
+      }
+    }));
     setFavList(props.propsLists[0]);
 
     // console.log(api.getAllTasksFromList(props.propsLists[0]));
@@ -173,41 +188,17 @@ const NewTask = (props: IProps) => {
         </div>
       </div>
       <div className="flex px-10">
-        <div className="relative inline-block text-left">
-          <div>
-            <button
-              type="button"
-              className="inline-flex w-full align-middle text-xl  text-stone-900 tracking-wide justify-center gap-x-1.5 rounded-md bg-stone-100 px-3 py-3"
-              id="menu-button"
-              aria-expanded="true"
-              aria-haspopup="true"
-            >
-              {favList.title}
-              <FaAngleDown className="self-center" />
-            </button>
-          </div>
-          <div
-            className="absolute left-0 z-10 -mt-14 w-56 bg-white drop-shadow-xl shadow-black"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button"
-          >
-            <div className="py-1" role="none">
-              {props.propsLists.map((list) => {
-                return (
-                  <a
-                    className="block text-stone-900 text-xl px-5 py-2 hover:bg-stone-100"
-                    id={`menu-item-${list.id}`}
-                    key={list.id}
-                    onClick={() => handleListClick(list)}
-                  >
-                    {list.title}
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <Dropdown
+          className="relative inline-block text-left text-xl text-stone-900 tracking-wide rounded-md bg-stone-100 px-3 py-3"
+          controlClassName="flex flex-row justify-between gap-x-1.5 items-center"
+          menuClassName="absolute left-0 top-0 z-99 w-56 bg-white drop-shadow-xl shadow-black"
+          options={listsOption}
+          onChange={(list) => {handleListClick(list)}}
+          value={favList.id}
+          placeholder={favList.title}
+          arrowClosed={<FaAngleDown className="self-center"/>}
+          arrowOpen={<FaAngleUp className="" />}
+        />
       </div>
     </div>
   );
