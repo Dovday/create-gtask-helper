@@ -34,21 +34,22 @@ interface IProps {
 //   ]
 // }
 
-export interface ITask 
-  {
-    kind?: string, // must always be 'task#task',
-    title: string, 
-    updated?: string, // RFC 3339 timestamp
-    notes?: string, // optional: description
-    status: string, // 'needsAction' or 'completed'
-    due?: string, // optional: RFC 3339 timestamp - It isn't possible to read or write the time that a task is due via the API
-  }
+export interface ITask {
+  kind?: string; // must always be 'task#task',
+  title: string;
+  updated?: string; // RFC 3339 timestamp
+  notes?: string; // optional: description
+  status: string; // 'needsAction' or 'completed'
+  due?: string; // optional: RFC 3339 timestamp - It isn't possible to read or write the time that a task is due via the API
+}
 
 const NewTask = (props: IProps) => {
   const [favList, setFavList] = useState<List>({ id: "", title: "" });
   const [starredTask, setStarredTask] = useState<boolean>(false);
-  const inputTask = document.getElementById("taskText");
   const [task, setTask] = useState<ITask>();
+
+  const inputTask = document.getElementById("taskText");
+  const taskPlaceholder = document.getElementById("taskPlaceholder");
 
   const setEndOfContenteditable = (contentEditableElement: any) => {
     let range, selection;
@@ -70,44 +71,64 @@ const NewTask = (props: IProps) => {
   };
 
   const handleInputTask = (taskText: string) => {
+    // TODO
+    // handle placeholder
+    
+    let trigger = taskText;
     if (taskText.includes("!!!")) {
-      let trigger = taskText;
       inputTask!.innerHTML = trigger.replace(
         /!!!/,
         "<span class='bg-blue-600 rounded-md px-2 py-1 text-white'>!!!</span>"
       );
       setStarredTask(true);
     } else {
+      inputTask!.innerHTML = trigger.replace(
+        "<span class='bg-blue-600 rounded-md px-2 py-1 text-white'></span>",
+        ""
+      );
       setStarredTask(false);
     }
     setEndOfContenteditable(inputTask);
   };
 
-  const postTask = () => {
+  const handleListClick = (list: List) => {
     // TODO
-    // check if title is empty
-    // notify the user if task was added correctly
-    // or otherwise
-    // clear input field
+    // close dropdown
+    setFavList(list);
+  };
+
+  const postTask = () => {
+    if(!inputTask!.innerText) {
+      console.log("empty task");
+      // TODO
+      // show alert
+
+      inputTask!.focus();
+      return;
+    }
 
     const newTask: ITask = {
       title: inputTask!.innerText,
-      due:"2023-05-05T16:59:19.243Z",
-      notes:"test",
+      due: "2023-05-05T16:59:19.243Z",
+      notes: "test",
       status: "needsAction",
     };
 
     const status = api.postTask(newTask, favList);
+    // TODO
+    // check if status is 200
+    inputTask!.innerHTML = "";
+    inputTask!.focus();
 
     console.log(status);
-  }
+  };
 
   useEffect(() => {
     if (props.propsLists.length == 0) return;
 
     setFavList(props.propsLists[0]);
 
-    console.log(api.getAllTasksFromList(props.propsLists[0]));
+    // console.log(api.getAllTasksFromList(props.propsLists[0]));
   }, [props.propsLists]);
 
   return (
@@ -116,10 +137,18 @@ const NewTask = (props: IProps) => {
         <div
           id="taskText"
           contentEditable={true}
-          className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl placeholder:text-3xl placeholder:text-stone-500 placeholder:tracking-wide focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
+          className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
           // placeholder="Add task"
           onInput={(e) => handleInputTask(e.target.innerText)}
-        ></div>
+          //onClick={() => taskPlaceholder!.classList.add("text-white")}
+        >
+          {/* <span
+            id="taskPlaceholder"
+            className="text-3xl text-stone-500 tracking-wide pointer-events-none"
+          >
+            Add task
+          </span> */}
+        </div>
         <div className="flex flex-row justify-between gap-10">
           {!starredTask ? (
             <FaRegStar
@@ -167,10 +196,10 @@ const NewTask = (props: IProps) => {
               {props.propsLists.map((list) => {
                 return (
                   <a
-                    href="#"
                     className="block text-stone-900 text-xl px-5 py-2 hover:bg-stone-100"
                     id={`menu-item-${list.id}`}
                     key={list.id}
+                    onClick={() => handleListClick(list)}
                   >
                     {list.title}
                   </a>
