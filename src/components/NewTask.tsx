@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { FaRegStar, FaStar, FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { List } from "../App";
 import Dropdown from "react-dropdown";
-// import "react-dropdown/style.css";
 import * as api from "../api/google";
+import InputDate from "./DatePicker";
 
 interface IProps {
   propsLists: List[];
@@ -187,11 +187,11 @@ const NewTask = (props: IProps) => {
           </button>
         </div>
       </div>
-      <div className="flex px-10">
+      <div className="flex px-10 gap-x-10">
         <Dropdown
-          className="relative inline-block text-left text-xl text-stone-900 tracking-wide rounded-md bg-stone-100 px-3 py-3"
+          className="relative inline-block text-left text-stone-900 tracking-wide rounded-md bg-stone-100 px-3 py-3"
           controlClassName="flex flex-row justify-between gap-x-1.5 items-center"
-          menuClassName="absolute left-0 top-0 z-99 w-56 bg-white drop-shadow-xl shadow-black"
+          menuClassName="absolute left-0 top-0 z-10 w-52 bg-white drop-shadow-xl shadow-black"
           options={listsOption}
           onChange={(list) => {handleListClick(list)}}
           value={favList.id}
@@ -199,6 +199,7 @@ const NewTask = (props: IProps) => {
           arrowClosed={<FaAngleDown className="self-center"/>}
           arrowOpen={<FaAngleUp className="" />}
         />
+        <InputDate/>
       </div>
     </div>
   );
