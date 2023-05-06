@@ -54,7 +54,6 @@ const NewTask = (props: IProps) => {
   const [task, setTask] = useState<ITask>();
 
   const inputTask = document.getElementById("taskText");
-  const taskPlaceholder = document.getElementById("taskPlaceholder");
 
   const [listsOption, setListsOption] = useState<IListOption[]>([]);
 
@@ -78,8 +77,6 @@ const NewTask = (props: IProps) => {
   };
 
   const handleInputTask = (taskText: string) => {
-    // TODO
-    // handle placeholder
 
     let trigger = taskText;
     if (taskText.includes("!!!")) {
@@ -153,16 +150,9 @@ const NewTask = (props: IProps) => {
           id="taskText"
           contentEditable={true}
           className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
-          // placeholder="Add task"
           onInput={(e) => handleInputTask(e.target.innerText)}
-          //onClick={() => taskPlaceholder!.classList.add("text-white")}
+          data-placeholder="Add task"
         >
-          {/* <span
-            id="taskPlaceholder"
-            className="text-3xl text-stone-500 tracking-wide pointer-events-none"
-          >
-            Add task
-          </span> */}
         </div>
         <div className="flex flex-row justify-between gap-10">
           {!starredTask ? (

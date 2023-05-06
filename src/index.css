@@ -33,3 +33,8 @@
 .Dropdown-option:hover {
   box-shadow: inset 0 0 0 1px #2563eb;
 }
+#taskText:empty:not(:focus):before {
+  content: attr(data-placeholder);
+  color: #78716c;
+  letter-spacing: 0.025em;
+}
