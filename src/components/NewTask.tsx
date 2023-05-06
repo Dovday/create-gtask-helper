@@ -199,7 +199,7 @@ const NewTask = (props: IProps) => {
           arrowClosed={<FaAngleDown className="self-center"/>}
           arrowOpen={<FaAngleUp className="" />}
         />
-        <InputDate/>
+        <InputDate />
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import * as api from "./api/google";
 import NewTask from "./components/NewTask";
+import { LoadingScreen } from "./components/LoadingScreen";
 
 export interface List {
   id: string;
@@ -29,13 +30,10 @@ const App = () => {
   useEffect(() => {
     client.requestAccessToken();
   }, []);
-
-  // TODO
-  // create loading screen
   
   return (
     <div className="App flex flex-col h-screen py-4">
-      <NewTask propsLists={lists}/>
+      {lists.length > 0 ? <NewTask propsLists={lists}/> : <LoadingScreen/>}
     </div>
   );
 }

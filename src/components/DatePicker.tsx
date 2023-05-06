@@ -35,7 +35,8 @@ const InputDate: React.FC = () => (
   <DatePicker
     defaultValue={dayjs(getToday(), dateFormatList[0])}
     format={dateFormatList}
-    className="w-42 bg-stone-100" // text-left text-xl text-stone-900 tracking-wide border-0 focus:border-b-2 focus:border-b-blue-600"
+    className="w-42 bg-stone-100 text-left text-xl text-stone-900 tracking-wide border-0 focus:border-b-2 focus:border-b-blue-600 focus:shadow-none"
+    // onChange={(date, dateString) => {console.log(date, dateString)}}
   />
 );
 
