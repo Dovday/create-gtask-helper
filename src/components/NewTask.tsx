@@ -186,8 +186,8 @@ const NewTask = (props: IProps) => {
           onChange={(list) => {handleListClick(list)}}
           value={favList.id}
           placeholder={favList.title}
-          arrowClosed={<FaAngleDown className="self-center"/>}
-          arrowOpen={<FaAngleUp className="" />}
+          arrowClosed={<FaAngleDown className="arrow-list self-center"/>}
+          arrowOpen={<FaAngleUp className="arrow-list" />}
         />
         <InputDate />
       </div>
