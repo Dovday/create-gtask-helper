@@ -4,6 +4,7 @@ import { List } from "../App";
 import Dropdown from "react-dropdown";
 import * as api from "../api/google";
 import InputDate from "./DatePicker";
+import { format } from "fecha";
 
 interface IProps {
   propsLists: List[];
@@ -51,9 +52,13 @@ export interface ITask {
 const NewTask = (props: IProps) => {
   const [favList, setFavList] = useState<List>({ id: "", title: "" });
   const [starredTask, setStarredTask] = useState<boolean>(false);
-  const [task, setTask] = useState<ITask>();
+  // const [task, setTask] = useState<ITask>();
+  const [dueDate, setDueDate] = useState<string>("");
+  const [descriptionText, setDescriptionText] = useState<string>("");
 
   const inputTask = document.getElementById("taskText");
+  const inputNotes = document.getElementById("descriptionText");
+  const [saveBtnDisabled, setSaveBtnDisabled] = useState<boolean>(true);
 
   const [listsOption, setListsOption] = useState<IListOption[]>([]);
 
@@ -77,6 +82,9 @@ const NewTask = (props: IProps) => {
   };
 
   const handleInputTask = (taskText: string) => {
+    inputTask!.innerText.length > 0
+      ? (setSaveBtnDisabled(false))
+      : (setSaveBtnDisabled(true));
 
     let trigger = taskText;
     if (taskText.includes("!!!")) {
@@ -99,24 +107,15 @@ const NewTask = (props: IProps) => {
     const convertedList = {
       id: chosenList.value,
       title: chosenList.label,
-    }
+    };
     setFavList(convertedList);
   };
 
   const postTask = () => {
-    if (!inputTask!.innerText) {
-      console.log("empty task");
-      // TODO
-      // show alert
-
-      inputTask!.focus();
-      return;
-    }
-
     const newTask: ITask = {
       title: inputTask!.innerText,
-      due: "2023-05-05T16:59:19.243Z",
-      notes: "test",
+      due: dueDate, // increment by 1 if you want to get correct date (from selected)
+      notes: descriptionText,
       status: "needsAction",
     };
 
@@ -126,22 +125,31 @@ const NewTask = (props: IProps) => {
     inputTask!.innerHTML = "";
     inputTask!.focus();
 
+    inputNotes!.innerText= "";
+
     console.log(status);
   };
 
   useEffect(() => {
     if (props.propsLists.length == 0) return;
 
-    setListsOption(props.propsLists.map((list) => {
-      return {
-        value: list.id,
-        label: list.title,
-      }
-    }));
+    setListsOption(
+      props.propsLists.map((list) => {
+        return {
+          value: list.id,
+          label: list.title,
+        };
+      })
+    );
     setFavList(props.propsLists[0]);
 
     // console.log(api.getAllTasksFromList(props.propsLists[0]));
   }, [props.propsLists]);
+
+  // WHY DOESN'T THIS WORK?
+  // useEffect(() => {
+  //   inputTask!.innerText.length > 0 ? saveBtn!.disabled = false : saveBtn!.disabled = true;
+  // }, [inputTask!.innerText]);
 
   return (
     <div className="flex flex-col gap-7">
@@ -152,8 +160,7 @@ const NewTask = (props: IProps) => {
           className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
           onInput={(e) => handleInputTask(e.target.innerText)}
           data-placeholder="Add task"
-        >
-        </div>
+        ></div>
         <div className="flex flex-row justify-between gap-10">
           {!starredTask ? (
             <FaRegStar
@@ -169,8 +176,10 @@ const NewTask = (props: IProps) => {
             />
           )}
           <button
-            className="bg-blue-600 hover:bg-blue-700 my-4 px-6 rounded-md text-white font-semibold tracking-wide"
+            id="saveBtn"
+            className="hover:disabled:bg-blue-600 disabled:opacity-50 bg-blue-600 hover:bg-blue-700 my-4 px-6 rounded-md text-white font-semibold tracking-wide"
             type="submit"
+            disabled={saveBtnDisabled}
             onClick={() => postTask()}
           >
             Save
@@ -183,13 +192,28 @@ const NewTask = (props: IProps) => {
           controlClassName="flex flex-row justify-between gap-x-1.5 items-center"
           menuClassName="absolute left-0 top-0 z-10 w-52 bg-white drop-shadow-xl shadow-black"
           options={listsOption}
-          onChange={(list) => {handleListClick(list)}}
+          onChange={(list) => {
+            handleListClick(list);
+          }}
           value={favList.id}
           placeholder={favList.title}
-          arrowClosed={<FaAngleDown className="arrow-list self-center"/>}
+          arrowClosed={<FaAngleDown className="arrow-list self-center" />}
           arrowOpen={<FaAngleUp className="arrow-list" />}
         />
-        <InputDate />
+        <InputDate
+          onChange={(dateString) => {
+            setDueDate(format(new Date(dateString), "isoDateTime"));
+          }}
+        />
+      </div>
+      <div className="flex px-10 gap-x-10">
+        <div
+          id="descriptionText"
+          contentEditable={true}
+          className="w-3/5 px-3 py-3 bg-stone-100 border-0 text-left rounded-md text-stone-900 text-sm"
+          data-placeholder="Add description"
+          onInput={(e) => setDescriptionText(e.target.innerText)}
+        ></div>
       </div>
     </div>
   );
