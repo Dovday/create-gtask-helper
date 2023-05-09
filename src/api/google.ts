@@ -1,5 +1,6 @@
 import axios from "axios";
-import { ITask, IList } from "../types";
+import {ITask} from "../components/NewTask";
+import {IList} from "../App";
 
 const client = () => {
   return axios.create({

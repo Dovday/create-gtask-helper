@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FaRegStar, FaStar, FaAngleDown, FaAngleUp } from "react-icons/fa";
-import { List } from "../App";
+import { IList } from "../App";
 import Dropdown from "react-dropdown";
 import * as api from "../api/google";
 import InputDate from "./DatePicker";
 import { format } from "fecha";
+import Alert from "./Alert";
 
 interface IProps {
-  propsLists: List[];
+  propsLists: IList[];
 }
 
 interface IListOption {
@@ -50,7 +51,7 @@ export interface ITask {
 }
 
 const NewTask = (props: IProps) => {
-  const [favList, setFavList] = useState<List>({ id: "", title: "" });
+  const [favList, setFavList] = useState<IList>({ id: "", title: "" });
   const [starredTask, setStarredTask] = useState<boolean>(false);
   // const [task, setTask] = useState<ITask>();
   const [dueDate, setDueDate] = useState<string>("");
@@ -59,7 +60,8 @@ const NewTask = (props: IProps) => {
   const inputTask = document.getElementById("taskText");
   const inputNotes = document.getElementById("descriptionText");
   const [saveBtnDisabled, setSaveBtnDisabled] = useState<boolean>(true);
-
+  const [error, setError] = useState<boolean>(false);
+  const [taskAddedSucc, setTaskAddedSucc] = useState<boolean>(false);
   const [listsOption, setListsOption] = useState<IListOption[]>([]);
 
   const setEndOfContenteditable = (contentEditableElement: any) => {
@@ -82,9 +84,13 @@ const NewTask = (props: IProps) => {
   };
 
   const handleInputTask = (taskText: string) => {
+    // removing alerts
+    setError(false);
+    setTaskAddedSucc(false);
+
     inputTask!.innerText.length > 0
-      ? (setSaveBtnDisabled(false))
-      : (setSaveBtnDisabled(true));
+      ? setSaveBtnDisabled(false)
+      : setSaveBtnDisabled(true);
 
     let trigger = taskText;
     if (taskText.includes("!!!")) {
@@ -111,7 +117,7 @@ const NewTask = (props: IProps) => {
     setFavList(convertedList);
   };
 
-  const postTask = () => {
+  const postTask = async () => {
     const newTask: ITask = {
       title: inputTask!.innerText,
       due: dueDate, // increment by 1 if you want to get correct date (from selected)
@@ -119,15 +125,19 @@ const NewTask = (props: IProps) => {
       status: "needsAction",
     };
 
-    const status = api.postTask(newTask, favList);
-    // TODO
-    // check if status is 200
-    inputTask!.innerHTML = "";
-    inputTask!.focus();
-
-    inputNotes!.innerText= "";
+    const status = (await api.postTask(newTask, favList)).status;
 
     console.log(status);
+
+    if (status == 200) {
+      setTaskAddedSucc(true);
+      inputTask!.innerHTML = "";
+      inputTask!.focus();
+      inputNotes!.innerText = "";
+      setStarredTask(false);
+    } else {
+      setError(true);
+    }
   };
 
   useEffect(() => {
@@ -146,19 +156,14 @@ const NewTask = (props: IProps) => {
     // console.log(api.getAllTasksFromList(props.propsLists[0]));
   }, [props.propsLists]);
 
-  // WHY DOESN'T THIS WORK?
-  // useEffect(() => {
-  //   inputTask!.innerText.length > 0 ? saveBtn!.disabled = false : saveBtn!.disabled = true;
-  // }, [inputTask!.innerText]);
-
   return (
-    <div className="flex flex-col gap-7">
-      <div className="flex flex-row justify-between px-10">
+    <div className="flex flex-col px-10 gap-7">
+      <div className="flex flex-row justify-between">
         <div
           id="taskText"
           contentEditable={true}
           className="w-3/5 py-4 border-0 text-left border-b-2 text-stone-900 text-3xl focus:outline-0 focus:border-b-2 focus:border-b-blue-600"
-          onInput={(e) => handleInputTask(e.target.innerText)}
+          onInput={(e: any) => handleInputTask(e.target.innerText)}
           data-placeholder="Add task"
         ></div>
         <div className="flex flex-row justify-between gap-10">
@@ -186,7 +191,22 @@ const NewTask = (props: IProps) => {
           </button>
         </div>
       </div>
-      <div className="flex px-10 gap-x-10">
+      {/* set timeout for alerts */}
+      {error ? (
+        <div className="flex w-full">
+          <Alert
+            message="An error occured. Please try again."
+            type="error"
+            showIcon
+          />
+        </div>
+      ) : null}
+      {taskAddedSucc ? (
+        <div className="flex w-full">
+          <Alert message="Task added successfully." type="info" closable />
+        </div>
+      ) : null}
+      <div className="flex gap-x-10">
         <Dropdown
           className="relative inline-block text-left text-stone-900 tracking-wide rounded-md bg-stone-100 px-3 py-3"
           controlClassName="flex flex-row justify-between gap-x-1.5 items-center"
@@ -206,13 +226,13 @@ const NewTask = (props: IProps) => {
           }}
         />
       </div>
-      <div className="flex px-10 gap-x-10">
+      <div className="flex gap-x-10">
         <div
           id="descriptionText"
           contentEditable={true}
           className="w-3/5 px-3 py-3 bg-stone-100 border-0 text-left rounded-md text-stone-900 text-sm"
           data-placeholder="Add description"
-          onInput={(e) => setDescriptionText(e.target.innerText)}
+          onInput={(e: any) => setDescriptionText(e.target.innerText)}
         ></div>
       </div>
     </div>

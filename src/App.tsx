@@ -8,13 +8,13 @@ import * as api from "./api/google";
 import NewTask from "./components/NewTask";
 import { LoadingScreen } from "./components/LoadingScreen";
 
-export interface List {
+export interface IList {
   id: string;
   title: string;
 }
 
 const App = () => {
-  const [lists, setLists] = useState<List[]>([]);
+  const [lists, setLists] = useState<IList[]>([]);
 
   // gapi api call
   const client = google.accounts.oauth2.initTokenClient({

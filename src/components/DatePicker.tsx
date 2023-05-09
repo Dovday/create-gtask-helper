@@ -20,13 +20,19 @@ const getToday = () => {
   return retval;
 };
 
-const InputDate = ({onChange}) => {
+
+interface IProps {
+  onChange: (dateString:string) => void;
+}
+
+const InputDate = (props: IProps) => {
+  const { onChange } = props;
   return (
     <DatePicker
       defaultValue={dayjs(getToday(), dateFormatList[0])}
       format={dateFormatList}
       className="w-42 bg-stone-100 text-xl text-stone-900 font-medium border-0 shadow-none"
-      onChange={onChange}
+      onChange={(e:any) => {onChange(e.$d)}}
     />
   );
 };
