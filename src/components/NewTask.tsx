@@ -6,6 +6,7 @@ import * as api from "../api/google";
 import InputDate from "./DatePicker";
 import { format } from "fecha";
 import Alert from "./Alert";
+import ListsPrompt from "./ListsPrompt";
 
 interface IProps {
   propsLists: IList[];
