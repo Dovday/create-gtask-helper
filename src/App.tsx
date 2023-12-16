@@ -7,6 +7,7 @@ import "./App.css";
 import * as api from "./api/google";
 import NewTask from "./components/NewTask";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { NavBar} from "./components/Navbar";
 
 export interface IList {
   id: string;
@@ -29,11 +30,18 @@ const App = () => {
 
   useEffect(() => {
     client.requestAccessToken();
+
+    console.log("client", client);
   }, []);
-  
+
   return (
     <div className="App flex flex-col h-screen py-4">
-      {lists.length > 0 ? <NewTask propsLists={lists}/> : <LoadingScreen/>}
+      {lists.length > 0 ?
+      <>
+        <NewTask propsLists={lists}/>
+        <NavBar/>
+      </>
+       : <LoadingScreen/>}
     </div>
   );
 }
